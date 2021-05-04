@@ -8,8 +8,8 @@ first you need to have something to run the script like [TamperMonkey](https://w
 
 ## Future work
 
-[ ] support for the pop-up chat box after clicking the ticker  
-[ ] support all currencies in youtube  
-[ ] support for better currency lookup  
-[ ] support for automatic currency exchange rate lookup  
-[ ] Become an extension for better experience and privacy concerns  
+- [ ] support for the pop-up chat box after clicking the ticker
+- [ ] support all currencies in youtube
+- [ ] support for better currency lookup
+- [ ] support for automatic currency exchange rate lookup
+- [ ] Become an extension for better experience and privacy concerns
