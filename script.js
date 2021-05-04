@@ -10,28 +10,52 @@
 
 (function () {
     const SCRIPTID = 'YouTubeSuperChatConvert';
-    const DEBUG = false;
+    const DEBUG = true;
 
-    const ratios = {
-        "CA$": 5.27,
-        "$": 6.47,
-        "A$": 5.02,
-        "NT$": 0.23,
-        "HK$": 0.83,
-        "R$": 1.19,
-        "¥": 0.059,
+    const currency = {
+        "CA$": "CAD",
+        "$": "USD",
+        "US$": "USD",
+        "A$": "AUD",
+        "NT$": "TWD",
+        "HK$": "HKD",
+        "R$": "BRL",
+        "JP¥": "JPY",
+        "¥": "JPY",
+        "SGD": "SGD",
+        "€": "EUR",
+        "NZ$": "NZD",
+        "SEK": "SEK",
+        "£": "GBP",
+        "PEN": "PEN",
+        "PHP": "PHP",
+        "₱": "PHP",
+        "₩": "KRW",
+        "CHF": "CHF",
+        "DKK": "DKK",
+        "CZK": "CZK",
+        "₹": "INR",
+    }
+    const rates = {
+        "CAD": 5.27,
+        "USD": 6.47,
+        "AUD": 5.02,
+        "TWD": 0.23,
+        "HKD": 0.83,
+        "BRL": 1.19,
+        "JPY": 0.059,
         "SGD": 4.87,
-        "€": 7.8,
-        "NZ$": 4.66,
+        "EUR": 7.8,
+        "NZD": 4.66,
         "SEK": 0.77,
-        "£": 9.00,
+        "GBP": 9.00,
         "PEN": 1.71,
-        "₱": 0.021,
-        "₩": 0.0058,
+        "PHP": 0.021,
+        "KRW": 0.0058,
         "CHF": 7.09,
         "DKK": 1.05,
         "CZK": 0.30,
-        "₹": 0.088,
+        "INR": 0.088,
     };
     if (console.time) console.time(SCRIPTID);
     const site = {
@@ -47,7 +71,6 @@
     const core = {
         initialize: function () {
             elements.html = document.documentElement;
-            elements.html.classList.add(SCRIPTID);
             core.ready();
         },
         ready: function () {
@@ -71,12 +94,12 @@
         },
         changeText: function (div) {
             const number = div.innerHTML.match(/\d+.*/)[0].trim().replace(',', '')
-            const curr_variant = div.innerHTML.match(/^[^0-9]*/)[0].replace(/&nbsp;/g,'').trim()
-            const ratio = ratios[curr_variant] || 0
+            const curr_variant = div.innerHTML.match(/^[^0-9]*/)[0].replace(/&nbsp;/g, '').trim()
+            const ratio = rates[currency[curr_variant]] || 0
             if (ratio === 0) log(curr_variant)
             div.innerHTML += ` ~ CNY ${(number * ratio).toFixed(2)}`
         },
-        getTarget: function (selector, retry = 10) {
+        getTarget: async function (selector, retry = 10) {
             const key = selector.name;
             const get = function (resolve, reject, retry) {
                 let selected = selector();
@@ -87,13 +110,15 @@
                 elements[key] = selected;
                 resolve(selected);
             };
-            return new Promise(function (resolve, reject) {
-                get(resolve, reject, retry);
-            }).catch(selector => {
+            try {
+                return new Promise(function (resolve_2, reject_1) {
+                    get(resolve_2, reject_1, retry);
+                });
+            } catch (selector_1) {
                 log(`Not found: ${key}, I give up.`);
-            });
+            }
         },
-        getTargets: function (selectors, retry = 10) {
+        getTargets: async function (selectors, retry = 10) {
             return Promise.all(Object.values(selectors).map(selector => core.getTarget(selector, retry)));
         },
     };
