@@ -4,7 +4,7 @@
 // @namespace   lei.z
 // @include     https://www.youtube.com/live_chat*
 // @include     https://www.youtube.com/live_chat_replay*
-// @version     0.2.1
+// @version     0.3.0
 // @grant       none
 // ==/UserScript==
 
@@ -41,7 +41,7 @@
         "PLN": "PLN",
         "ARS": "ARS",
         "BGN": "BGN"
-    }
+    };
     const rates = {
         "CAD": 5.27,
         "USD": 6.47,
@@ -73,13 +73,30 @@
     const site = {
         targets: {
             itemsNode: () => $('yt-live-chat-item-list-renderer #items'),
+            pinnedMessageNode: () => $('yt-live-chat-renderer #pinned-message'),
+        },
+        pinned: {
+            pinnedNode: () => $('yt-live-chat-pinned-message-renderer #message'),
         },
         get: {
-            superChatItems: (items) => items.querySelectorAll('.yt-live-chat-item-list-renderer #purchase-amount, #purchase-amount-chip'),/* existing items */
-            superChatItem: (node) => node.querySelector('.yt-live-chat-item-list-renderer #purchase-amount, #purchase-amount-chip'),/* for observer */
+            superChatItems: (items) => items.querySelectorAll('.yt-live-chat-paid-message-renderer #purchase-amount, #purchase-amount-chip'),/* existing items */
+            superChatItem: (node) => node.querySelector('.yt-live-chat-paid-message-renderer #purchase-amount, #purchase-amount-chip'),/* for observer */
         },
     };
     let elements = {};
+    const chat_callback = function (records) {
+        records.forEach(r => r.addedNodes.forEach(node => {
+            if (node.nodeType !== Node.ELEMENT_NODE) return;
+            let container = site.get.superChatItem(node);
+            if (container) core.changeText(container);
+        }));
+    };
+    const pinned_callback = function(records) {
+        chat_callback(records);
+        core.getTargets(site.pinned).then(() => {
+            observe(elements.pinnedNode, chat_callback);
+        });
+    };
     const core = {
         initialize: function () {
             elements.html = document.documentElement;
@@ -94,22 +111,17 @@
         observeChatItems: function () {
             let containers = site.get.superChatItems(elements.itemsNode);
             Array.from(containers).forEach(container => {
-                log(container)
                 core.changeText(container);
             });
-            observe(elements.itemsNode, function (records) {
-                records.forEach(r => r.addedNodes.forEach(node => {
-                    let container = site.get.superChatItem(node);
-                    if (container) core.changeText(container);
-                }));
-            });
+            observe(elements.itemsNode, chat_callback);
+            observe(elements.pinnedMessageNode, pinned_callback);
         },
         changeText: function (div) {
-            const number = div.innerHTML.match(/\d+.*/)[0].trim().replace(',', '')
-            const curr_variant = div.innerHTML.match(/^[^0-9]*/)[0].replace(/&nbsp;/g, '').trim()
-            const ratio = rates[currency[curr_variant]] || 0
-            if (ratio === 0) log(curr_variant)
-            div.innerHTML += ` ~ CNY ${(number * ratio).toFixed(2)}`
+            const number = div.innerHTML.match(/\d+.*/)[0].trim().replace(',', '');
+            const curr_variant = div.innerHTML.match(/^[^0-9]*/)[0].replace(/&nbsp;/g, '').trim();
+            const ratio = rates[currency[curr_variant]] || 0;
+            if (ratio === 0) log(curr_variant);
+            div.innerHTML += ` ~ CNY ${(number * ratio).toFixed(2)}`;
         },
         getTarget: async function (selector, retry = 10) {
             const key = selector.name;
@@ -144,7 +156,7 @@
         return f ? Array.from(targets).map(t => f(t)) : targets;
     };
     const observe = function (element, callback, options = { childList: true, attributes: false, characterData: false, subtree: false }) {
-        let observer = new MutationObserver(callback.bind(element));
+        let observer = new MutationObserver(callback);
         observer.observe(element, options);
         return observer;
     };
