@@ -35,6 +35,12 @@
         "DKK": "DKK",
         "CZK": "CZK",
         "₹": "INR",
+        "RUB": "RUB",
+        "BYN": "BYN",
+        "CZK": "CZK",
+        "PLN": "PLN",
+        "ARS": "ARS",
+        "BGN": "BGN"
     }
     const rates = {
         "CAD": 5.27,
@@ -56,6 +62,12 @@
         "DKK": 1.05,
         "CZK": 0.30,
         "INR": 0.088,
+        "RUB": 0.086,
+        "BYN": 2.52,
+        "CZK": 0.3,
+        "PLN": 1.71,
+        "ARS": 0.069,
+        "BGN": 3.98,
     };
     if (console.time) console.time(SCRIPTID);
     const site = {
