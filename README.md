@@ -12,4 +12,4 @@ first you need to have something to run the script like [TamperMonkey](https://w
 [] support all currencies in youtube  
 [] support for better currency lookup  
 [] support for automatic currency exchange rate lookup  
-[] Become an extension for better experience and privacy concerns
+[] Become an extension for better experience and privacy concerns  
