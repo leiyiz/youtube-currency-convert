@@ -4,7 +4,7 @@
 // @namespace   lei.z
 // @include     https://www.youtube.com/live_chat*
 // @include     https://www.youtube.com/live_chat_replay*
-// @version     0.1
+// @version     0.2.1
 // @grant       none
 // ==/UserScript==
 
