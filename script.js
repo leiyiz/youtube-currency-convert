@@ -4,7 +4,7 @@
 // @namespace   lei.z
 // @include     https://www.youtube.com/live_chat*
 // @include     https://www.youtube.com/live_chat_replay*
-// @version     0.3.0
+// @version     0.3.1
 // @grant       none
 // ==/UserScript==
 
@@ -17,6 +17,7 @@
         "$": "USD",
         "US$": "USD",
         "A$": "AUD",
+        "AU$": "AUD",
         "NT$": "TWD",
         "HK$": "HKD",
         "R$": "BRL",
@@ -121,7 +122,7 @@
             const curr_variant = div.innerHTML.match(/^[^0-9]*/)[0].replace(/&nbsp;/g, '').trim();
             const ratio = rates[currency[curr_variant]] || 0;
             if (ratio === 0) log(curr_variant);
-            div.innerHTML += ` ~ CNY ${(number * ratio).toFixed(2)}`;
+            div.innerHTML += ` ~ CN¥${(number * ratio).toFixed(2)}`;
         },
         getTarget: async function (selector, retry = 10) {
             const key = selector.name;
